@@ -3,6 +3,7 @@ package com.example.facedetection.model;
 import java.util.List;
 
 public  class Post {
+
         private boolean success;
         private String $id;
         private int type;
@@ -55,42 +56,25 @@ public  class Post {
 
         public void setRoomId(Object roomId) { this.roomId = roomId; }
 
-    public List<PayLoad> getPayload() {
-        return payload;
-    }
+        public List<PayLoad> getPayload() { return payload; }
 
-    public void setPayload(List<PayLoad> payload) {
-        this.payload = payload;
-    }
+        public void setPayload(List<PayLoad> payload) {  this.payload = payload; }
 
-    public int getDay() {
-        return day;
-    }
+        public int getDay() { return day; }
 
-    public void setDay(int day) {
-        this.day = day;
-    }
+        public void setDay(int day) { this.day = day; }
 
-    public int getYear() {
-        return year;
-    }
+        public int getYear() { return year; }
 
-    public void setYear(int year) {
-        this.year = year;
-    }
+        public void setYear(int year) { this.year = year; }
 
-    public Object getPlCount() {
-        return plCount;
-    }
+        public Object getPlCount() { return plCount; }
 
-    public void setPlCount(Object plCount) {
-        this.plCount = plCount;
-    }
+        public void setPlCount(Object plCount) { this.plCount = plCount;  }
 
-    /*******************************************************************************************/
+/*****************************************************************************************************/
 
-        public Post(String $id, int type, List<PayLoad> payload, int clientId, int customerId, Object guid, String birhtDate, String eventDateTime) {
-            this.$id = $id;
+        public Post( int type, List<PayLoad> payload, int clientId, int customerId, Object guid, String birhtDate, String eventDateTime) {
             this.type = type;
             this.payload = payload;
             this.clientId = clientId;
@@ -101,26 +85,18 @@ public  class Post {
         }
 
         public Post(){ }
-
-        /*********************************************************************************************/
-
-
+/*************************************************************************************************/
 
     @Override
     public String toString() {
-        return "Post{" +
-                "$id='" + $id + '\'' +
-                ", type=" + type +
-                ", day=" + day +
-                ", year=" + year +
-                ", roomId=" + roomId +
-                ", sucess=" + success +
-                ", payLoad=" + payload.toString() +
-                ", clientId=" + clientId +
-                ", customerId=" + customerId +
-                ", Guid=" + Guid +
-                ", birhtDate='" + birhtDate + '\'' +
-                ", EventDateTime='" + EventDateTime + '\'' +
+        return "{" +
+                "type:" + type +
+                ", payLoad:" + payload +
+                ", clientId:" + clientId +
+                ", customerId:" + customerId +
+                ", Guid:" + Guid +
+                ", birhtDate:'" + birhtDate + '\'' +
+                ", EventDateTime:'" + EventDateTime + '\'' +
                 '}';
     }
 }

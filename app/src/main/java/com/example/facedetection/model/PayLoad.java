@@ -4,94 +4,71 @@ import java.util.List;
 
 public class PayLoad    {
     private String $id;
-    private int customerId;
-    private int scopedId;
-    private Object image;
+    private double customerId;
+    private double scopedId;
+    private Image image;
     private Object name;
-    private Object birthDate;
     private Object gender;
     private Object eventContextDate;
-    private Object events;
-    private Object docs;
-    private List validationResults;
     private boolean succes;
     private List<Picture> Pictures;
+    private  String birthDate;
+    private List<Event> events;
+    private List<Doc> docs;
+    private List<Object> validationResults;
 
-    /**********************************************/
-
-    public int getCustomerId() { return customerId; }
-
-    public void setCustomerId(int customerId) {  this.customerId = customerId;  }
+/**********************************************************************************/
 
     public String get$id() { return $id; }
 
     public void set$id(String $id) { this.$id = $id; }
 
-    public List<Picture> getPictures() { return Pictures; }
+    public double getCustomerId() { return customerId;  }
 
-    public void setPictures(List<Picture> pictures) { Pictures = pictures; }
+    public void setCustomerId(double customerId) { this.customerId = customerId; }
 
-    public int getScopedId() { return scopedId; }
+    public double getScopedId() { return scopedId; }
 
-    public void setScopedId(int scopedId) { this.scopedId = scopedId; }
+    public void setScopedId(double scopedId) { this.scopedId = scopedId; }
 
-    public Object getImage() { return image; }
+    public Image getImage() { return image; }
 
-    public void setImage(Object image) { this.image = image; }
+    public void setImage(Image image) { this.image = image; }
 
     public Object getName() { return name; }
 
     public void setName(Object name) { this.name = name; }
 
-    public Object getBirthDate() { return birthDate; }
+    public Object getGender() { return gender; }
 
-    public void setBirthDate(Object birthDate) { this.birthDate = birthDate; }
+    public void setGender(Object gender) { this.gender = gender; }
 
-    public Object getGender() {
-        return gender;
-    }
+    public Object getEventContextDate() { return eventContextDate; }
 
-    public void setGender(Object gender) {
-        this.gender = gender;
-    }
+    public void setEventContextDate(Object eventContextDate) { this.eventContextDate = eventContextDate; }
 
-    public Object getEventContextDate() {
-        return eventContextDate;
-    }
+    public boolean isSucces() { return succes; }
 
-    public void setEventContextDate(Object eventContextDate) {
-        this.eventContextDate = eventContextDate;
-    }
+    public void setSucces(boolean succes) { this.succes = succes; }
 
-    public Object getEvents() {
-        return events;
-    }
+    public List<Picture> getPictures() {  return Pictures; }
 
-    public void setEvents(Object events) {
-        this.events = events;
-    }
+    public void setPictures(List<Picture> pictures) { Pictures = pictures; }
 
-    public Object getDocs() {
-        return docs;
-    }
+    public String getBirthDate() { return birthDate; }
 
-    public void setDocs(Object docs) {
-        this.docs = docs;
-    }
+    public void setBirthDate(String birthDate) { this.birthDate = birthDate; }
 
-    public List getValidationResults() {
-        return validationResults;
-    }
+    public List<Event> getEvents() { return events; }
 
-    public void setValidationResults(List validationResults) {
-        this.validationResults = validationResults;
-    }
+    public void setEvents(List<Event> events) { this.events = events; }
 
-    public boolean isSucces() {
-        return succes;
-    }
+    public List<Doc> getDocs() { return docs; }
 
-    public void setSucces(boolean succes) {
-        this.succes = succes;
-    }
+    public void setDocs(List<Doc> docs) { this.docs = docs; }
+
+    public List<Object> getValidationResults() { return validationResults; }
+
+    public void setValidationResults(List<Object> validationResults) { this.validationResults = validationResults; }
+
 }

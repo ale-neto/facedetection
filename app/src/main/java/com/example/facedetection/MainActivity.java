@@ -43,13 +43,9 @@ public class MainActivity extends AppCompatActivity {
     private CircleButton faceDetectButton;
     private GraphicOverlay graphicOverlay;
     private CameraView cameraView;
-    private TextView tvResult;
     private String base64String;
-    SurfaceView surfaceView;
-    SurfaceHolder surfaceHolder;
-    public static boolean previewing = false;
+    public static boolean previewing = true;
     AlertDialog alertDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
