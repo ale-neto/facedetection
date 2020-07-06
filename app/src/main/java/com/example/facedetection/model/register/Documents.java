@@ -1,6 +1,8 @@
-package com.example.facedetection.model;
+package com.example.facedetection.model.register;
 
-public class Doc {
+import com.example.facedetection.model.Subject;
+
+public class Documents {
 
     private String $id;
     private String value;

@@ -1,20 +1,26 @@
-package com.example.facedetection.model;
+package com.example.facedetection.model.register;
+
+import com.example.facedetection.model.Doc;
+import com.example.facedetection.model.Event;
+import com.example.facedetection.model.Image;
+import com.example.facedetection.model.Picture;
 
 import java.util.List;
 
-public class PayLoad    {
+public class PayLoadR {
     private String $id;
     private double customerId;
     private double scopedId;
     private Image image;
     private String name;
+    private String motherName;
     private Object gender;
     private Object eventContextDate;
     private boolean succes;
     private List<Picture> Pictures;
     private  String birthDate;
     private List<Event> events;
-    private List<Doc> docs;
+    private List<Documents> documents;
     private List<Object> validationResults;
 
 /**********************************************************************************/
@@ -62,10 +68,6 @@ public class PayLoad    {
     public List<Event> getEvents() { return events; }
 
     public void setEvents(List<Event> events) { this.events = events; }
-
-    public List<Doc> getDocs() { return docs; }
-
-    public void setDocs(List<Doc> docs) { this.docs = docs; }
 
     public List<Object> getValidationResults() { return validationResults; }
 

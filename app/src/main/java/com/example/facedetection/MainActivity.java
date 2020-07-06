@@ -10,14 +10,16 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.facedetection.config.GraphicOverlay;
 import com.example.facedetection.config.RectOverlay;
+import com.example.facedetection.model.PayLoad;
+import com.example.facedetection.model.Picture;
+import com.example.facedetection.model.Post;
+import com.example.facedetection.services.RecognitionServices;
 import com.example.facedetection.util.ImageUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,19 +35,26 @@ import com.wonderkiln.camerakit.CameraKitImage;
 import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import at.markushi.ui.CircleButton;
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
     private CircleButton faceDetectButton;
     private GraphicOverlay graphicOverlay;
     private CameraView cameraView;
-    private String base64String;
-    public static boolean previewing = true;
     AlertDialog alertDialog;
+    RecognitionServices recognitionS;
+    private String nomeResult;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
         graphicOverlay = findViewById(R.id.graphic_overlay);
         cameraView = findViewById(R.id.camera_view);
         cameraView.start();
+
+        Retrofit retrofit  = new Retrofit.Builder()
+                .baseUrl("https://cluster.tercepta.com.br")
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
+
+        recognitionS = retrofit.create(RecognitionServices.class);
+
         alertDialog = new SpotsDialog.Builder()
                 .setContext(this)
                 .setMessage("Aguarde, por favor...")
@@ -73,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        String img = getBase64String();
+                        String img = getNomeResult();
                         Intent it = new Intent(MainActivity.this, Result.class);
                         Bundle result =  new Bundle();
                         result.putString("result", img);
@@ -97,17 +114,17 @@ public class MainActivity extends AppCompatActivity {
 
                 alertDialog.show();
                 Bitmap bitmap =  cameraKitImage.getBitmap();
-                setBase64String(ImageUtil.convert(bitmap)) ;
+                String base64 = ImageUtil.convert(bitmap);
                 bitmap = Bitmap.createScaledBitmap(bitmap, cameraView.getWidth(), cameraView.getHeight(), false);
-                Log.i("teste", getBase64String());
+                recognitionPost(base64);
                 cameraView.stop();
                 processFaceDetection(bitmap);
 
             }
 
-
             @Override
             public void onVideo(CameraKitVideo cameraKitVideo) { }
+
         });
 
     }
@@ -141,11 +158,45 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.dismiss();
     }
 
-    public String getBase64String() {
-        return base64String;
+    private String recognitionPost(String base64) {
+
+        List<PayLoad> payload = new ArrayList<>();
+        PayLoad payLoadAux = new PayLoad();
+        List<Picture> picture = new ArrayList<>();
+        Picture pictureAux =  new Picture();
+        pictureAux.setContent(base64);
+        picture.add(pictureAux);
+        payLoadAux.setPictures(picture);
+        payLoadAux.setBirthDate("05/06/1997");
+        payload.add(payLoadAux);
+
+        final Post post = new Post(2, payload, 3,3, null, "05/06/1997", "05/05/2020");
+
+        Call<Post> call = recognitionS.recognitionPost(post);
+        call.enqueue(new Callback<Post>() {
+
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                Post postResponse = response.body();
+
+                nomeResult = null;
+
+                for (PayLoad payLoadR : postResponse.getPayload()){
+                    setNomeResult(payLoadR.getName());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                Log.i("error",t.getMessage());
+            }
+        });
+
+        return getNomeResult();
     }
 
-    public void setBase64String(String base64String) {
-        this.base64String = base64String;
-    }
+
+    public String getNomeResult() {return nomeResult; }
+
+    public void setNomeResult(String nomeResult) {this.nomeResult = nomeResult; }
 }

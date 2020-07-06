@@ -2,6 +2,7 @@ package com.example.facedetection.model;
 
 
 public class Event {
+
     private String $id;
     private Object eventContextId;
     private Object eventContextDate;

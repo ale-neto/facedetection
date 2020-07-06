@@ -1,6 +1,7 @@
 package com.example.facedetection.model;
 
 public class Document {
+
     private String $ref;
 
     public String get$ref() {
