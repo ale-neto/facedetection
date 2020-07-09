@@ -5,9 +5,10 @@ import com.example.facedetection.model.Event;
 import com.example.facedetection.model.Image;
 import com.example.facedetection.model.Picture;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PayLoadR {
+public class PayLoadR implements Serializable {
     private String $id;
     private double customerId;
     private double scopedId;

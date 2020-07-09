@@ -21,8 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".registerActivities.FirstPhotoActivity" />
+        <activity android:name=".registerActivities.SecondPhotoActivity" />
+        <activity android:name=".registerActivities.ThirdPhotoActivity" />
+        <activity android:name=".registerActivities.RegisterFace" />
         <activity android:name=".Result" />
         <activity android:name=".MainActivity" />
     </application>
+
 
 </manifest>

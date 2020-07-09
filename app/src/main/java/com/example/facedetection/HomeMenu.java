@@ -7,6 +7,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.facedetection.registerActivities.FirstPhotoActivity;
+
 public class HomeMenu extends AppCompatActivity implements View.OnClickListener {
 
     @Override
@@ -28,6 +30,11 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
             case R.id.recognition:
                 Intent it = new Intent(this, MainActivity.class);
                 startActivity(it);
+                break;
+
+            case R.id.register:
+                Intent register = new Intent(this, FirstPhotoActivity.class);
+                startActivity(register);
                 break;
         }
 

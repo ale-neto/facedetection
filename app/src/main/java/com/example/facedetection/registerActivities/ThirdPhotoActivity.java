@@ -1,7 +1,4 @@
-package com.example.facedetection;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+package com.example.facedetection.registerActivities;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -13,12 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.facedetection.R;
 import com.example.facedetection.config.GraphicOverlay;
 import com.example.facedetection.config.RectOverlay;
-import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
-import com.example.facedetection.model.Post;
-import com.example.facedetection.services.RecognitionServices;
+import com.example.facedetection.model.register.PayLoadR;
+import com.example.facedetection.model.register.Register;
 import com.example.facedetection.util.ImageUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,39 +39,30 @@ import java.util.List;
 
 import at.markushi.ui.CircleButton;
 import dmax.dialog.SpotsDialog;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class ThirdPhotoActivity extends AppCompatActivity {
 
     private CircleButton faceDetectButton;
     private GraphicOverlay graphicOverlay;
     private CameraView cameraView;
     AlertDialog alertDialog;
-    RecognitionServices recognitionS;
-    private String nomeResult;
+    private String base64;
+    private Register register;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        register = (Register) getIntent().getSerializableExtra("register");
+
+
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.third_photo);
         faceDetectButton = findViewById(R.id.detect_face_button);
         graphicOverlay = findViewById(R.id.graphic_overlay);
         cameraView = findViewById(R.id.camera_view);
         cameraView.start();
-
-        Retrofit retrofit  = new Retrofit.Builder()
-                .baseUrl("https://cluster.tercepta.com.br")
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build();
-
-        recognitionS = retrofit.create(RecognitionServices.class);
 
         alertDialog = new SpotsDialog.Builder()
                 .setContext(this)
@@ -89,12 +80,21 @@ public class MainActivity extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        String img = getNomeResult();
-                        Intent it = new Intent(MainActivity.this, Result.class);
+
+                        PayLoadR payLoadAux = new PayLoadR();
+                        List<Picture> picture = new ArrayList<>();
+                        Picture pictureAux =  new Picture();
+                        pictureAux.setContent(getBase64());
+                        payLoadAux.setPictures(picture);
+                        picture.add(pictureAux);
+                        getRegister().getPayload().add(payLoadAux);
+
+                        Intent it = new Intent(ThirdPhotoActivity.this, RegisterFace.class);
                         Bundle result =  new Bundle();
-                        result.putString("result", img);
+                        result.putSerializable("register", getRegister());
                         it.putExtras(result);
                         startActivity(it);
+
                     }
                 },9000);
             }
@@ -113,9 +113,9 @@ public class MainActivity extends AppCompatActivity {
 
                 alertDialog.show();
                 Bitmap bitmap =  cameraKitImage.getBitmap();
-                String base64 = ImageUtil.convert(bitmap);
+                setBase64(ImageUtil.convert(bitmap));
                 bitmap = Bitmap.createScaledBitmap(bitmap, cameraView.getWidth(), cameraView.getHeight(), false);
-                recognitionPost(base64);
+                Log.i("IMAGEM 2", getBase64());
                 cameraView.stop();
                 processFaceDetection(bitmap);
 
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(MainActivity.this, "Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ThirdPhotoActivity.this, "Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -157,45 +157,19 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.dismiss();
     }
 
-    private String recognitionPost(String base64) {
-
-        List<PayLoad> payload = new ArrayList<>();
-        PayLoad payLoadAux = new PayLoad();
-        List<Picture> picture = new ArrayList<>();
-        Picture pictureAux =  new Picture();
-        pictureAux.setContent(base64);
-        picture.add(pictureAux);
-        payLoadAux.setPictures(picture);
-        payLoadAux.setBirthDate("05/06/1997");
-        payload.add(payLoadAux);
-
-        final Post post = new Post(2, payload, 3,3, null, "05/06/1997", "05/05/2020");
-
-        Call<Post> call = recognitionS.recognitionPost(post);
-        call.enqueue(new Callback<Post>() {
-
-            @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
-                Post postResponse = response.body();
-
-                nomeResult = null;
-
-                for (PayLoad payLoadR : postResponse.getPayload()){
-                    setNomeResult(payLoadR.getName());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Post> call, Throwable t) {
-                Log.i("error",t.getMessage());
-            }
-        });
-
-        return getNomeResult();
+    public String getBase64() {
+        return base64;
     }
 
+    public void setBase64(String base64) {
+        this.base64 = base64;
+    }
 
-    public String getNomeResult() {return nomeResult; }
+    public Register getRegister() {
+        return register;
+    }
 
-    public void setNomeResult(String nomeResult) {this.nomeResult = nomeResult; }
+    public void setRegister(Register register) {
+        this.register = register;
+    }
 }

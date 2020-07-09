@@ -1,8 +1,9 @@
 package com.example.facedetection.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PayLoad    {
+public class PayLoad  implements Serializable {
     private String $id;
     private double customerId;
     private double scopedId;

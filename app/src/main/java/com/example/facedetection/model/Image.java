@@ -1,6 +1,8 @@
 package com.example.facedetection.model;
 
-public class Image {
+import java.io.Serializable;
+
+public class Image implements Serializable {
     private String $id;
     private Object name;
     private Object content;

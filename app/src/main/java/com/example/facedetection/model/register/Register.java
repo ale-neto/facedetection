@@ -2,9 +2,10 @@ package com.example.facedetection.model.register;
 
 import com.example.facedetection.model.PayLoad;
 
+import java.io.Serializable;
 import java.util.List;
 
-public  class Register {
+public  class Register implements Serializable {
 
         private boolean success;
         private String $id;

@@ -1,6 +1,8 @@
 package com.example.facedetection.model;
 
-public class Picture {
+import java.io.Serializable;
+
+public class Picture implements Serializable {
     private String Content;
 
     public String getContent() {
