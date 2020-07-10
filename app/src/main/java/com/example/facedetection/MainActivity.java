@@ -166,10 +166,10 @@ public class MainActivity extends AppCompatActivity {
         pictureAux.setContent(base64);
         picture.add(pictureAux);
         payLoadAux.setPictures(picture);
-        payLoadAux.setBirthDate("05/06/1997");
+        payLoadAux.setBirthDate("11/11/1999");
         payload.add(payLoadAux);
 
-        final Post post = new Post(2, payload, 3,3, null, "05/06/1997", "05/05/2020");
+        final Post post = new Post(2, payload, 3,3, "11/11/1999", "05/05/2020");
 
         Call<Post> call = recognitionS.recognitionPost(post);
         call.enqueue(new Callback<Post>() {

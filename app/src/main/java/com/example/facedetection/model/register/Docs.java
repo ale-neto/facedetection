@@ -2,11 +2,11 @@ package com.example.facedetection.model.register;
 
 import com.example.facedetection.model.Subject;
 
-public class Documents {
+public class Docs {
 
     private String $id;
-    private double value;
-    private double documentTypeId;
+    private String value;
+    private int documentTypeId;
     private Object documentType;
     private int subjectId;
     private Subject subject;
@@ -18,21 +18,13 @@ public class Documents {
 
     public void set$id(String $id) { this.$id = $id; }
 
-    public double getValue() {
-        return value;
-    }
+    public String getValue() { return value; }
 
-    public void setValue(double value) {
-        this.value = value;
-    }
+    public void setValue(String value) { this.value = value; }
 
-    public double getDocumentTypeId() {
-        return documentTypeId;
-    }
+    public int getDocumentTypeId() { return documentTypeId;  }
 
-    public void setDocumentTypeId(double documentTypeId) {
-        this.documentTypeId = documentTypeId;
-    }
+    public void setDocumentTypeId(int documentTypeId) { this.documentTypeId = documentTypeId; }
 
     public Object getDocumentType() { return documentType; }
 

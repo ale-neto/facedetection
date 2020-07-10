@@ -1,8 +1,9 @@
 package com.example.facedetection.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public  class Post {
+public  class Post  implements Serializable {
 
         private boolean success;
         private String $id;
@@ -36,11 +37,9 @@ public  class Post {
 
         public void setGuid(Object guid) { Guid = guid; }
 
-        public String getBirhtDate() { return birhtDate; }
 
-        public void setBirhtDate(String birhtDate) { this.birhtDate = birhtDate; }
 
-        public String getEventDateTime() { return EventDateTime; }
+    public String getEventDateTime() { return EventDateTime; }
 
         public void setEventDateTime(String eventDateTime) { EventDateTime = eventDateTime; }
 
@@ -72,17 +71,26 @@ public  class Post {
 
         public void setPlCount(Object plCount) { this.plCount = plCount;  }
 
-/*****************************************************************************************************/
+    public String getBirhtDate() {
+        return birhtDate;
+    }
 
-        public Post( int type, List<PayLoad> payload, int clientId, int customerId, Object guid, String birhtDate, String eventDateTime) {
-            this.type = type;
-            this.payload = payload;
-            this.clientId = clientId;
-            this.customerId = customerId;
-            Guid = guid;
-            this.birhtDate = birhtDate;
-            EventDateTime = eventDateTime;
-        }
+    public void setBirhtDate(String birhtDate) {
+        this.birhtDate = birhtDate;
+    }
+
+    public Post(int type, List<PayLoad> payload, int clientId, int customerId, String birhtDate, String eventDateTime) {
+        this.type = type;
+        this.payload = payload;
+        this.clientId = clientId;
+        this.customerId = customerId;
+        this.birhtDate = birhtDate;
+        EventDateTime = eventDateTime;
+    }
+
+    /*****************************************************************************************************/
+
+
 
         public Post(){ }
 /*************************************************************************************************/

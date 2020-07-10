@@ -18,8 +18,10 @@ public class RegisterFace extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         register = (Register) getIntent().getSerializableExtra("register");
 
+        getRegister().getPayload();
         setContentView(R.layout.register);
         tvResult = findViewById(R.id.textView);
         tvResult.setText(getRegister().toString());

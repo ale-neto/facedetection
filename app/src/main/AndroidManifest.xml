@@ -24,6 +24,7 @@
         <activity android:name=".registerActivities.FirstPhotoActivity" />
         <activity android:name=".registerActivities.SecondPhotoActivity" />
         <activity android:name=".registerActivities.ThirdPhotoActivity" />
+        <activity android:name=".registerActivities.ClientRegisterActivity" />
         <activity android:name=".registerActivities.RegisterFace" />
         <activity android:name=".Result" />
         <activity android:name=".MainActivity" />

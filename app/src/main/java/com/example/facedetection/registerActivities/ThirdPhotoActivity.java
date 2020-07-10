@@ -81,15 +81,15 @@ public class ThirdPhotoActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-                        PayLoadR payLoadAux = new PayLoadR();
-                        List<Picture> picture = new ArrayList<>();
-                        Picture pictureAux =  new Picture();
-                        pictureAux.setContent(getBase64());
-                        payLoadAux.setPictures(picture);
-                        picture.add(pictureAux);
-                        getRegister().getPayload().add(payLoadAux);
+                        for(PayLoadR payLoadR : getRegister().getPayload()){
+                            Picture pictureAux =  new Picture();
+                            pictureAux.setContent(getBase64());
+                            payLoadR.getPictures().add(pictureAux);
+                        }
 
-                        Intent it = new Intent(ThirdPhotoActivity.this, RegisterFace.class);
+
+
+                        Intent it = new Intent(ThirdPhotoActivity.this, ClientRegisterActivity.class);
                         Bundle result =  new Bundle();
                         result.putSerializable("register", getRegister());
                         it.putExtras(result);

@@ -75,18 +75,21 @@ public  class Register implements Serializable {
 
         public void setPlCount(Object plCount) { this.plCount = plCount;  }
 
-/*****************************************************************************************************/
+    public Register(int type, List<PayLoadR> payload, int clientId, int customerId, Object guid, String eventDateTime, Object roomId) {
+        this.type = type;
+        this.payload = payload;
+        this.clientId = clientId;
+        this.customerId = customerId;
+        Guid = guid;
+        EventDateTime = eventDateTime;
+        this.roomId = roomId;
+    }
 
-        public Register(int type, List<PayLoadR> payload, int clientId, int customerId, Object guid, String eventDateTime, Object roomId) {
-            this.type = type;
-            this.payload = payload;
-            this.clientId = clientId;
-            this.customerId = customerId;
-            Guid = guid;
-            this.birhtDate = birhtDate;
-            EventDateTime = eventDateTime;
-            roomId = roomId;
-        }
+    /*****************************************************************************************************/
+
+
+
+
 
         public Register(){ }
 /*************************************************************************************************/

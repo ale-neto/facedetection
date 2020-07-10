@@ -88,6 +88,7 @@ public class FirstPhotoActivity extends AppCompatActivity {
                         pictureAux.setContent(getBase64());
                         payLoadAux.setPictures(picture);
                         picture.add(pictureAux);
+                        payload.add(payLoadAux);
                         register.setPayload(payload);
 
                         Intent it = new Intent(FirstPhotoActivity.this, SecondPhotoActivity.class);

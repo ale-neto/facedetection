@@ -83,14 +83,11 @@ public class SecondPhotoActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
-
-                        PayLoadR payLoadAux = new PayLoadR();
-                        List<Picture> picture = new ArrayList<>();
-                        Picture pictureAux =  new Picture();
-                        pictureAux.setContent(getBase64());
-                        payLoadAux.setPictures(picture);
-                        picture.add(pictureAux);
-                        getRegister().getPayload().add(payLoadAux);
+                        for(PayLoadR payLoadR : getRegister().getPayload()){
+                            Picture pictureAux =  new Picture();
+                            pictureAux.setContent(getBase64());
+                            payLoadR.getPictures().add(pictureAux);
+                        }
 
                         Intent it = new Intent(SecondPhotoActivity.this, ThirdPhotoActivity.class);
                         Bundle result =  new Bundle();

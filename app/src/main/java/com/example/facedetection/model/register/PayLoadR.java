@@ -22,6 +22,7 @@ public class PayLoadR implements Serializable {
     private  String birthDate;
     private List<Event> events;
     private List<Documents> documents;
+    private List<Docs> docs;
     private List<Object> validationResults;
 
 /**********************************************************************************/
@@ -74,4 +75,27 @@ public class PayLoadR implements Serializable {
 
     public void setValidationResults(List<Object> validationResults) { this.validationResults = validationResults; }
 
+    public String getMotherName() {
+        return motherName;
+    }
+
+    public void setMotherName(String motherName) {
+        this.motherName = motherName;
+    }
+
+    public List<Documents> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Documents> documents) {
+        this.documents = documents;
+    }
+
+    public List<Docs> getDocs() {
+        return docs;
+    }
+
+    public void setDocs(List<Docs> docs) {
+        this.docs = docs;
+    }
 }
