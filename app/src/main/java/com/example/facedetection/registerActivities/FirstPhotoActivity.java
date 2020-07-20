@@ -14,10 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.facedetection.R;
-import com.example.facedetection.Result;
 import com.example.facedetection.config.GraphicOverlay;
 import com.example.facedetection.config.RectOverlay;
-import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.register.PayLoadR;
 import com.example.facedetection.model.register.Register;
@@ -50,12 +48,15 @@ public class FirstPhotoActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     private String base64;
     private Register register = new Register();
-
+    String token;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle resultB = getIntent().getExtras();
+        token = resultB.getString("register");
 
         getSupportActionBar().hide();
         setContentView(R.layout.fisrt_photo);
@@ -94,6 +95,7 @@ public class FirstPhotoActivity extends AppCompatActivity {
                         Intent it = new Intent(FirstPhotoActivity.this, SecondPhotoActivity.class);
                         Bundle result =  new Bundle();
                         result.putSerializable("register", register);
+                        result.putString("token",token);
                         it.putExtras(result);
                         startActivity(it);
 

@@ -14,10 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.facedetection.R;
-import com.example.facedetection.Result;
 import com.example.facedetection.config.GraphicOverlay;
 import com.example.facedetection.config.RectOverlay;
-import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.register.PayLoadR;
 import com.example.facedetection.model.register.Register;
@@ -36,7 +34,6 @@ import com.wonderkiln.camerakit.CameraKitImage;
 import com.wonderkiln.camerakit.CameraKitVideo;
 import com.wonderkiln.camerakit.CameraView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import at.markushi.ui.CircleButton;
@@ -50,7 +47,7 @@ public class SecondPhotoActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     private String base64;
     private Register register;
-
+    String token;
 
 
     @Override
@@ -58,6 +55,9 @@ public class SecondPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         register = (Register) getIntent().getSerializableExtra("register");
+
+        Bundle resultB = getIntent().getExtras();
+        token = resultB.getString("token");
 
         getSupportActionBar().hide();
         setContentView(R.layout.second_photo);
@@ -92,6 +92,7 @@ public class SecondPhotoActivity extends AppCompatActivity {
                         Intent it = new Intent(SecondPhotoActivity.this, ThirdPhotoActivity.class);
                         Bundle result =  new Bundle();
                         result.putSerializable("register", getRegister());
+                        result.putString("token", token);
                         it.putExtras(result);
                         startActivity(it);
 

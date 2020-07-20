@@ -48,14 +48,15 @@ public class ThirdPhotoActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     private String base64;
     private Register register;
-
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         register = (Register) getIntent().getSerializableExtra("register");
-
+        Bundle resultB = getIntent().getExtras();
+        token = resultB.getString("token");
 
         getSupportActionBar().hide();
         setContentView(R.layout.third_photo);
@@ -87,16 +88,15 @@ public class ThirdPhotoActivity extends AppCompatActivity {
                             payLoadR.getPictures().add(pictureAux);
                         }
 
-
-
                         Intent it = new Intent(ThirdPhotoActivity.this, ClientRegisterActivity.class);
                         Bundle result =  new Bundle();
                         result.putSerializable("register", getRegister());
+                        result.putString("token", token);
                         it.putExtras(result);
                         startActivity(it);
 
                     }
-                },9000);
+                },7000);
             }
         });
 
