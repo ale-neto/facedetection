@@ -20,6 +20,7 @@ import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.Post;
 import com.example.facedetection.services.RecognitionServices;
 import com.example.facedetection.util.ImageUtil;
+import com.example.facedetection.util.PreferenceUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.ml.vision.FirebaseVision;
@@ -53,13 +54,17 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     RecognitionServices recognitionS;
     private String nomeResult;
-
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle resultB = getIntent().getExtras();
+        token = resultB.getString("register");
+
         getSupportActionBar().hide();
+
         setContentView(R.layout.activity_main);
         faceDetectButton = findViewById(R.id.detect_face_button);
         graphicOverlay = findViewById(R.id.graphic_overlay);
@@ -90,13 +95,17 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         String img = getNomeResult();
-                        Intent it = new Intent(MainActivity.this, Result.class);
+                        if(img == null){
+                            img = "Error. Tente novamente, por favor ";
+                        }
+
+                        Intent it = new Intent(MainActivity.this, ReturnQueryActivity.class);
                         Bundle result =  new Bundle();
                         result.putString("result", img);
                         it.putExtras(result);
                         startActivity(it);
                     }
-                },9000);
+                },5000);
             }
         });
 
@@ -166,28 +175,34 @@ public class MainActivity extends AppCompatActivity {
         pictureAux.setContent(base64);
         picture.add(pictureAux);
         payLoadAux.setPictures(picture);
-        payLoadAux.setBirthDate("11/11/1999");
+        payLoadAux.setBirthDate("12/22/1993");
         payload.add(payLoadAux);
 
-        final Post post = new Post(2, payload, 3,3, "11/11/1999", "05/05/2020");
+        final Post post = new Post(2, payload, 3,3, "12/22/1993", "05/05/2020");
 
-        Call<Post> call = recognitionS.recognitionPost(post);
+        Call<Post> call = recognitionS.recognitionPost("Bearer "+ token, post);
         call.enqueue(new Callback<Post>() {
 
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
                 Post postResponse = response.body();
-
                 nomeResult = null;
 
                 for (PayLoad payLoadR : postResponse.getPayload()){
-                    setNomeResult(payLoadR.getName());
+                    if(payLoadR.getName() != null){
+                        setNomeResult("Você foi reconhecido " +payLoadR.getName() + "!");
+                    }else{
+                        setNomeResult("Error " + payLoadR.getName()  + ". Tente novamente, por favor");
+                    }
+
                 }
             }
 
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
                 Log.i("error",t.getMessage());
+                nomeResult = null;
+                setNomeResult("Error " + t.getMessage() + ". Tente novamente, por favor");
             }
         });
 
