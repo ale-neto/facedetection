@@ -39,6 +39,8 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
         recognition.setOnClickListener(this);
         Button register = findViewById(R.id.register);
         register.setOnClickListener(this);
+        Button crop = findViewById(R.id.crop);
+        crop.setOnClickListener(this);
 
         Retrofit retrofit  = new Retrofit.Builder()
                 .baseUrl("https://cluster-dev.tercepta.com.br")
@@ -69,7 +71,14 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
                 result.putString("register", resultR);
                 register.putExtras(result);
                 startActivity(register);
-                startActivity(register);
+                break;
+
+            case R.id.crop:
+                Intent crop = new Intent(this, PhotoActivity.class);
+                result =  new Bundle();
+                result.putString("register", resultR);
+                crop.putExtras(result);
+                startActivity(crop);
                 break;
         }
     }
