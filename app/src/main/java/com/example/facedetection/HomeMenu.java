@@ -8,16 +8,10 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.facedetection.model.PayLoad;
-import com.example.facedetection.model.Picture;
-import com.example.facedetection.model.Post;
 import com.example.facedetection.model.token.Token;
-import com.example.facedetection.registerActivities.FirstPhotoActivity;
+import com.example.facedetection.recognition.PhotoActivity;
+import com.example.facedetection.registerActivities.RegisterActivity;
 import com.example.facedetection.services.RecognitionServices;
-import com.example.facedetection.util.PreferenceUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,8 +29,8 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_menu);
 
-        Button recognition =  findViewById(R.id.recognition);
-        recognition.setOnClickListener(this);
+       // Button recognition =  findViewById(R.id.acti);
+     //   recognition.setOnClickListener(this);
         Button register = findViewById(R.id.register);
         register.setOnClickListener(this);
         Button crop = findViewById(R.id.crop);
@@ -57,16 +51,15 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View view) {
         Bundle result;
         switch (view.getId()){
-            case R.id.recognition:
-                Intent it = new Intent(this, MainActivity.class);
-                result =  new Bundle();
-                result.putString("register", resultR);
-                it.putExtras(result);
-                startActivity(it);
-                break;
+        //    case R.id.recognition:
+            //    Intent it = new Intent(this, RegisterActivity.class);
+              //  result =  new Bundle();
+               // result.putString("register", resultR);
+              //  it.putExtras(result);
+//                break;
 
             case R.id.register:
-                Intent register = new Intent(this, FirstPhotoActivity.class);
+                Intent register = new Intent(this, RegisterActivity.class);
                 result =  new Bundle();
                 result.putString("register", resultR);
                 register.putExtras(result);

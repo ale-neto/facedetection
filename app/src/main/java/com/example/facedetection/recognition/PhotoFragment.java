@@ -1,6 +1,7 @@
-package com.example.facedetection;
+package com.example.facedetection.recognition;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -9,13 +10,14 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -23,7 +25,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+
+import com.example.facedetection.R;
+import com.example.facedetection.model.PayLoad;
+import com.example.facedetection.model.Picture;
+import com.example.facedetection.model.Post;
+import com.example.facedetection.services.RecognitionServices;
 import com.example.facedetection.util.ImageUtil;
 
 import java.io.File;
@@ -31,21 +40,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Callback{
+public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
 
     Camera camera;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
     boolean previewing = false;
     Context context;
+    RecognitionServices recognitionS;
+    String token;
 
-    Camera.Size previewSizeOptimal;
+
 
     @BindView(R.id.preview_layout)
     LinearLayout previewLayout;
@@ -53,17 +71,70 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
     @BindView(R.id.border_camera)
     View borderCamera;
 
+    private OnFragmentInteractionListener mListener;
+
+    Camera.Size previewSizeOptimal;
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Bitmap bitmap);
+    }
+
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setRetainInstance(true);
+        Bundle data = getArguments();
+        token = data.getString("token");
 
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_photo);
+
+        Retrofit retrofit  = new Retrofit.Builder()
+                .baseUrl("https://cluster.tercepta.com.br")
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
+
+        recognitionS = retrofit.create(RecognitionServices.class);
 
 
-        surfaceView = (SurfaceView) findViewById(R.id.camera_preview_surface);
+
+    }
+
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+
+        // Inflate the layout for this fragment
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        View view = inflater.inflate(R.layout.fragment_photo, container, false);
+        surfaceView = (SurfaceView) view.findViewById(R.id.camera_preview_surface);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        ButterKnife.bind(this, view);
+        context = getContext();
+        return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -116,7 +187,6 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
                 e.printStackTrace();
             }
         }
-
     }
     public Camera.Size getOptimalPreviewSize(List<Camera.Size> sizes, int w, int h) {
         final double ASPECT_TOLERANCE = 0.1;
@@ -150,7 +220,6 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
         }
         return optimalSize;
     }
-
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder surfaceHolder) {
         camera.stopPreview();
@@ -165,6 +234,8 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
             camera.takePicture(myShutterCallback,
                     myPictureCallback_RAW, myPictureCallback_JPG);
         }
+
+
     }
 
     Camera.ShutterCallback myShutterCallback = new Camera.ShutterCallback() {
@@ -198,7 +269,7 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
                 matrix.postRotate(270);
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bitmapPicture, 0, 0, bitmapPicture.getWidth(), bitmapPicture.getHeight(), matrix, true);
                 //save file
-                createImageFile(rotatedBitmap);
+                //createImageFile(rotatedBitmap);
 
 
                 //calculate aspect ratio
@@ -229,6 +300,7 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
                 //save result
                 if (croppedBitmap != null) {
                     createImageFile(croppedBitmap);
+                    Log.i("Image", ImageUtil.convert(croppedBitmap));
                 }
 
             } else if (display.getRotation() == Surface.ROTATION_270) {
@@ -236,13 +308,14 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
             }
 
             //pass to another fragment
-         /*   if (mListener != null) {
+            if (mListener != null) {
                 if (croppedBitmap != null)
                     mListener.onFragmentInteraction(croppedBitmap);
-            } */
+            }
 
             if (camera != null) {
                 camera.startPreview();
+
             }
         }
     };
@@ -251,7 +324,6 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
-
         String timeStamp = new SimpleDateFormat("MMdd_HHmmssSSS").format(new Date());
         String imageFileName = "hap_" + timeStamp + ".jpg";
         final File file = new File(path, imageFileName);
@@ -265,7 +337,6 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
             OutputStream os = new FileOutputStream(file);
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
-            Log.i("Image64", ImageUtil.convert(bitmap));
 
             os.flush();
             os.close();
@@ -287,5 +358,54 @@ public class PhotoActivity extends AppCompatActivity implements SurfaceHolder.Ca
             // not currently mounted.
             Log.w("ExternalStorage", "Error writing " + file, e);
         }
+        recognitionPost(ImageUtil.convert(bitmap));
+
+    }
+    private void recognitionPost(String base64) {
+
+        List<PayLoad> payload = new ArrayList<>();
+        PayLoad payLoadAux = new PayLoad();
+        List<Picture> picture = new ArrayList<>();
+        Picture pictureAux =  new Picture();
+        pictureAux.setContent(base64);
+        picture.add(pictureAux);
+        payLoadAux.setPictures(picture);
+        payLoadAux.setBirthDate("12/22/1993");
+        payload.add(payLoadAux);
+
+        final Post post = new Post(2, payload, 3,3, "12/22/1993", "05/05/2020");
+
+        Call<Post> call = recognitionS.recognitionPost("Bearer "+ token, post);
+        call.enqueue(new Callback<Post>() {
+
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                Post postResponse = response.body();
+
+                String namePerson = null;
+                for (PayLoad payLoadR : postResponse.getPayload()){
+                    if(payLoadR.getName() != null){
+                        namePerson = "Você foi reconhecido " +payLoadR.getName() + "!";
+                    }else{
+                        namePerson = "Error " + payLoadR.getName()  + ". Tente novamente, por favor";
+                    }
+                }
+                
+                Intent in =  new Intent(getActivity(), ReturnQueryActivity.class);
+                in.putExtra("result",namePerson );
+                startActivity(in);
+                
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                Log.i("error",t.getMessage());
+                String error = null;
+                error = "Error " + t.getMessage() + ". Tente novamente, por favor";
+                Intent in =  new Intent(getActivity(), ReturnQueryActivity.class);
+                in.putExtra("result",error );
+                startActivity(in);
+            }
+        });
     }
 }

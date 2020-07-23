@@ -27,14 +27,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".registerActivities.FirstPhotoActivity" />
-        <activity android:name=".registerActivities.SecondPhotoActivity" />
-        <activity android:name=".registerActivities.ThirdPhotoActivity" />
         <activity android:name=".registerActivities.ClientRegisterActivity" />
         <activity android:name=".registerActivities.ReturnRegisterActivity" />
-        <activity android:name=".ReturnQueryActivity" />
+        <activity android:name=".registerActivities.RegisterActivity" />
+        <activity android:name=".recognition.ReturnQueryActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".PhotoActivity" />
+        <activity android:name=".recognition.PhotoActivity" />
     </application>
 
 

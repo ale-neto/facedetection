@@ -4,6 +4,11 @@ android {
     compileSdkVersion 30
     buildToolsVersion "30.0.0"
 
+    compileOptions {
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
+    }
+
     defaultConfig {
         applicationId "com.example.facedetection"
         minSdkVersion 23

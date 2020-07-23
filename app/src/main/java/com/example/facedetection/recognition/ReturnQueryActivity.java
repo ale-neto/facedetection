@@ -1,4 +1,4 @@
-package com.example.facedetection;
+package com.example.facedetection.recognition;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.facedetection.HomeMenu;
+import com.example.facedetection.R;
 import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.Post;
