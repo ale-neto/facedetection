@@ -320,8 +320,6 @@ public class PhotoFragmentFisrt extends Fragment implements SurfaceHolder.Callba
                 payload.add(payLoadAux);
                 register.setPayload(payload);
 
-
-
                 Bundle result =  new Bundle();
                 result.putSerializable("register", register);
                 result.putString("token", token);
