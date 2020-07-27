@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.facedetection.doc.DocPhotoActivity;
 import com.example.facedetection.model.token.Token;
 import com.example.facedetection.recognition.PhotoActivity;
 import com.example.facedetection.registerActivities.RegisterActivity;
@@ -31,6 +32,8 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
 
        // Button recognition =  findViewById(R.id.acti);
      //   recognition.setOnClickListener(this);
+        Button doc =  findViewById(R.id.doc);
+        doc.setOnClickListener(this);
         Button register = findViewById(R.id.register);
         register.setOnClickListener(this);
         Button crop = findViewById(R.id.crop);
@@ -73,6 +76,15 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
                 crop.putExtras(result);
                 startActivity(crop);
                 break;
+
+            case R.id.doc:
+                Intent doc = new Intent(this, DocPhotoActivity.class);
+                result =  new Bundle();
+                result.putString("register", resultR);
+                doc.putExtras(result);
+                startActivity(doc);
+                break;
+
         }
     }
 

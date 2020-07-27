@@ -32,6 +32,7 @@
         <activity android:name=".registerActivities.RegisterActivity" />
         <activity android:name=".recognition.ReturnQueryActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".doc.DocPhotoActivity" />
         <activity android:name=".recognition.PhotoActivity" />
     </application>
 
