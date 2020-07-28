@@ -296,7 +296,10 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
                 //save result
                 if (croppedBitmap != null) {
-                    createImageFile(croppedBitmap);
+
+                    String photo = ImageUtilDoc.convert(croppedBitmap);
+                    Bitmap bitmap = ImageUtil.convert(photo);
+                    createImageFile(bitmap);
                     Log.i("Image", ImageUtilDoc.convert(croppedBitmap));
                 }
 
@@ -333,7 +336,7 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
             OutputStream os = new FileOutputStream(file);
 
-            
+
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
 
@@ -358,5 +361,32 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
             Log.w("ExternalStorage", "Error writing " + file, e);
         }
     }
+    private static Bitmap getScaledBitmap(Bitmap b, int reqWidth, int reqHeight) {
+        int bWidth = b.getWidth();
+        int bHeight = b.getHeight();
+
+        int nWidth = bWidth;
+        int nHeight = bHeight;
+
+        if(nWidth > reqWidth) {
+            int ratio = bWidth / reqWidth;
+            if(ratio > 0)
+            {
+                nWidth = reqWidth;
+                nHeight = bHeight / ratio;
+            }
+        }
+
+        if(nHeight > reqHeight){
+            int ratio = bHeight / reqHeight;
+            if(ratio > 0) {
+                nHeight = reqHeight;
+                nWidth = bWidth / ratio;
+            }
+        }
+
+        return Bitmap.createScaledBitmap(b, nWidth, nHeight, true);
+    }
+
 
 }
