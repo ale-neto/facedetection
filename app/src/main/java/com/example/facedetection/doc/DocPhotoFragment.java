@@ -36,7 +36,9 @@ import com.example.facedetection.R;
 import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.Post;
+import com.example.facedetection.model.ocr.PostOcr;
 import com.example.facedetection.recognition.ReturnQueryActivity;
+import com.example.facedetection.services.DocServices;
 import com.example.facedetection.services.RecognitionServices;
 import com.example.facedetection.util.ImageUtil;
 import com.example.facedetection.util.ImageUtilDoc;
@@ -48,16 +50,24 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.Multipart;
 
 public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback{
 
@@ -66,7 +76,7 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
     SurfaceHolder surfaceHolder;
     boolean previewing = false;
     Context context;
-    RecognitionServices recognitionS;
+    DocServices docServicesS;
     String token;
 
 
@@ -94,15 +104,24 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
         token = data.getString("token");
 
 
+        // setting custom timeouts
+        OkHttpClient.Builder client = new OkHttpClient.Builder();
+        client.connectTimeout(5, TimeUnit.SECONDS);
+        client.readTimeout(5, TimeUnit.SECONDS);
+        client.writeTimeout(5, TimeUnit.SECONDS);
+
+        Retrofit retrofit  = new Retrofit.Builder()
+                .baseUrl("http://vmdev.tercepta.com.br")
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
+
+        docServicesS = retrofit.create(DocServices.class);
+
+
     }
 
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         View view = inflater.inflate(R.layout.fragment_doc_photo, container, false);
@@ -126,7 +145,6 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
                     + " must implement OnFragmentInteractionListener");
         }
     }
-
 
     @Override
     public void onDetach() {
@@ -299,7 +317,7 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
                     String photo = ImageUtilDoc.convert(croppedBitmap);
                     Bitmap bitmap = ImageUtil.convert(photo);
-                    createImageFile(bitmap);
+                    recognitionPost(createImageFile(bitmap));
                     Log.i("Image", ImageUtilDoc.convert(croppedBitmap));
                 }
 
@@ -320,7 +338,7 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
         }
     };
 
-    public void createImageFile(final Bitmap bitmap) {
+    public File createImageFile(final Bitmap bitmap) {
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
@@ -335,8 +353,6 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
             }
 
             OutputStream os = new FileOutputStream(file);
-
-
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
 
@@ -360,33 +376,37 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
             // not currently mounted.
             Log.w("ExternalStorage", "Error writing " + file, e);
         }
+        return file;
     }
-    private static Bitmap getScaledBitmap(Bitmap b, int reqWidth, int reqHeight) {
-        int bWidth = b.getWidth();
-        int bHeight = b.getHeight();
 
-        int nWidth = bWidth;
-        int nHeight = bHeight;
+    private void recognitionPost(File file) {
 
-        if(nWidth > reqWidth) {
-            int ratio = bWidth / reqWidth;
-            if(ratio > 0)
-            {
-                nWidth = reqWidth;
-                nHeight = bHeight / ratio;
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part requestImage = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+
+        Map<String, MultipartBody.Part> params = new HashMap<>();
+        params.put("1-2", requestImage);
+
+        Call<PostOcr> call = docServicesS.postOcr(params);
+        call.enqueue(new Callback<PostOcr>() {
+
+            @Override
+            public void onResponse(Call<PostOcr> call, Response<PostOcr> response) {
+                PostOcr postResponse = response.body();
+                int code = response.code();
+                Log.i("ENVIO", "code" + postResponse);
+                Log.i("POST", "POST" + postResponse);
+                Log.i("HTTP", "code" + code);
+                Log.i("RETORNO", "deu certo" + postResponse);
             }
-        }
 
-        if(nHeight > reqHeight){
-            int ratio = bHeight / reqHeight;
-            if(ratio > 0) {
-                nHeight = reqHeight;
-                nWidth = bWidth / ratio;
+            @Override
+            public void onFailure(Call<PostOcr> call, Throwable t) {
+                Log.i("error",t.getMessage());
             }
-        }
-
-        return Bitmap.createScaledBitmap(b, nWidth, nHeight, true);
+        });
     }
+
 
 
 }
