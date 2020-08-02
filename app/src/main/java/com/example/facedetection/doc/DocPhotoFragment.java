@@ -2,6 +2,7 @@ package com.example.facedetection.doc;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Observable;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -15,6 +16,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -36,12 +38,15 @@ import com.example.facedetection.R;
 import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.Post;
-import com.example.facedetection.model.ocr.PostOcr;
+import com.example.facedetection.model.ocr.postOcr;
 import com.example.facedetection.recognition.ReturnQueryActivity;
 import com.example.facedetection.services.DocServices;
 import com.example.facedetection.services.RecognitionServices;
 import com.example.facedetection.util.ImageUtil;
 import com.example.facedetection.util.ImageUtilDoc;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,6 +66,7 @@ import butterknife.OnClick;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,8 +82,9 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
     SurfaceHolder surfaceHolder;
     boolean previewing = false;
     Context context;
-    DocServices docServicesS;
+    DocServices docServices;
     String token;
+    Retrofit retrofit;
 
 
 
@@ -104,20 +111,18 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
         token = data.getString("token");
 
 
-        // setting custom timeouts
-        OkHttpClient.Builder client = new OkHttpClient.Builder();
-        client.connectTimeout(5, TimeUnit.SECONDS);
-        client.readTimeout(5, TimeUnit.SECONDS);
-        client.writeTimeout(5, TimeUnit.SECONDS);
 
-        Retrofit retrofit  = new Retrofit.Builder()
-                .baseUrl("http://vmdev.tercepta.com.br")
-                .addConverterFactory(JacksonConverterFactory.create())
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.MINUTES)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
                 .build();
 
-        docServicesS = retrofit.create(DocServices.class);
-
-
+         retrofit  = new Retrofit.Builder()
+                .baseUrl("http://vmdev.tercepta.com.br:10002")
+                .client(okHttpClient)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
     }
 
     @Override
@@ -317,7 +322,8 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
                     String photo = ImageUtilDoc.convert(croppedBitmap);
                     Bitmap bitmap = ImageUtil.convert(photo);
-                    recognitionPost(createImageFile(bitmap));
+                    //recognitionPost(createImageFile(bitmap));
+                    post(createImageFile(bitmap));
                     Log.i("Image", ImageUtilDoc.convert(croppedBitmap));
                 }
 
@@ -333,7 +339,6 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
             if (camera != null) {
                 camera.startPreview();
-
             }
         }
     };
@@ -381,30 +386,74 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
     private void recognitionPost(File file) {
 
-        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        MultipartBody.Part requestImage = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+        RequestBody request = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("1", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+                .build();
 
-        Map<String, MultipartBody.Part> params = new HashMap<>();
-        params.put("1-2", requestImage);
-
-        Call<PostOcr> call = docServicesS.postOcr(params);
-        call.enqueue(new Callback<PostOcr>() {
+        docServices = retrofit.create(DocServices.class);
+        Call<postOcr> call = docServices.post(request);
+        call.enqueue(new Callback<postOcr>() {
 
             @Override
-            public void onResponse(Call<PostOcr> call, Response<PostOcr> response) {
-                PostOcr postResponse = response.body();
+            public void onResponse(Call<postOcr> call, Response<postOcr> response) {
+                postOcr postResponse = response.body();
                 int code = response.code();
-                Log.i("ENVIO", "code" + postResponse);
                 Log.i("POST", "POST" + postResponse);
-                Log.i("HTTP", "code" + code);
-                Log.i("RETORNO", "deu certo" + postResponse);
+                Log.i("HTTP", "CODE" + code);
+                Log.i("RETURN", "POST" + postResponse);
             }
 
             @Override
-            public void onFailure(Call<PostOcr> call, Throwable t) {
+            public void onFailure(Call<postOcr> call, Throwable t) {
                 Log.i("error",t.getMessage());
             }
         });
+    }
+
+
+    private void post(File file){
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+
+        MediaType mediaType = MediaType.parse("text/plain");
+
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("1", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://vmdev.tercepta.com.br:10002/")
+                .method("POST", body)
+                .build();
+        try {
+
+            okhttp3.Response response = client.newCall(request).execute();
+
+            Log.i("post",response.body().toString());
+            int code = response.code();
+            Log.i("Code","code " + code);
+
+            String resStr = response.body().string();
+            JSONObject json = new JSONObject(resStr);
+
+            Log.i("Code", json.toString());
+
+            Intent in =  new Intent(getActivity(), ReturnOcrActivity.class);
+            in.putExtra("result", json.toString() );
+            startActivity(in);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

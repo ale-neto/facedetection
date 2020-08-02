@@ -2,7 +2,6 @@ package com.example.facedetection.services;
 
 
 import com.example.facedetection.model.Post;
-import com.example.facedetection.model.ocr.PostOcr;
 import com.example.facedetection.model.register.Register;
 import com.example.facedetection.model.token.Token;
 import com.example.facedetection.util.ImageUtil;

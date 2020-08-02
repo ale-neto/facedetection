@@ -1,6 +1,8 @@
 package com.example.facedetection.model.ocr;
 
-public class ocrs {
+import java.util.List;
 
+public class ocrs {
+    List<Integer> list;
 
 }

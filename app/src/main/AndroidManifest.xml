@@ -34,6 +34,7 @@
         <activity android:name=".recognition.ReturnQueryActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".doc.DocPhotoActivity" />
+        <activity android:name=".doc.ReturnOcrActivity" />
         <activity android:name=".recognition.PhotoActivity" />
     </application>
 
