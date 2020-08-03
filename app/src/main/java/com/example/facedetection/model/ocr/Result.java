@@ -1,4 +1,0 @@
-package com.example.facedetection.model.ocr;
-
-public class Result {
-}

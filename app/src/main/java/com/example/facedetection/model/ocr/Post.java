@@ -1,14 +1,14 @@
 package com.example.facedetection.model.ocr;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class postOcr {
-
+public class  Post {
 
     private float http_code;
     private float global_code;
     private String global_message;
-    private List<ocrs> ocrs;
+    private Ocrs ocrs;
 
 
 
@@ -36,11 +36,21 @@ public class postOcr {
         this.global_message = global_message;
     }
 
-    public List<com.example.facedetection.model.ocr.ocrs> getOcrs() {
+    public Ocrs getOcrs() {
         return ocrs;
     }
 
-    public void setOcrs(List<com.example.facedetection.model.ocr.ocrs> ocrs) {
+    public void setOcrs(Ocrs ocrs) {
         this.ocrs = ocrs;
     }
+
+    public Post(float http_code, float global_code, String global_message, Ocrs ocrs) {
+        this.http_code = http_code;
+        this.global_code = global_code;
+        this.global_message = global_message;
+        this.ocrs = ocrs;
+    }
+
+    public Post() { }
+
 }

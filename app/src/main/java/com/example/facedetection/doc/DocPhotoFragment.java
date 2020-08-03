@@ -2,15 +2,12 @@ package com.example.facedetection.doc;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Observable;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
+
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
+
 import android.hardware.Camera;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -35,13 +32,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.example.facedetection.R;
-import com.example.facedetection.model.PayLoad;
-import com.example.facedetection.model.Picture;
-import com.example.facedetection.model.Post;
-import com.example.facedetection.model.ocr.postOcr;
+import com.example.facedetection.model.ocr.Document;
+import com.example.facedetection.model.ocr.Ocrs;
+import com.example.facedetection.model.ocr.Post;
+
 import com.example.facedetection.recognition.ReturnQueryActivity;
 import com.example.facedetection.services.DocServices;
-import com.example.facedetection.services.RecognitionServices;
+
 import com.example.facedetection.util.ImageUtil;
 import com.example.facedetection.util.ImageUtilDoc;
 
@@ -53,11 +50,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+
 import java.util.Date;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -73,7 +70,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.http.Multipart;
+
 
 public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback{
 
@@ -322,8 +319,8 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
                     String photo = ImageUtilDoc.convert(croppedBitmap);
                     Bitmap bitmap = ImageUtil.convert(photo);
-                    //recognitionPost(createImageFile(bitmap));
-                    post(createImageFile(bitmap));
+                    recognitionPost(createImageFile(bitmap));
+                    //post(createImageFile(bitmap));
                     Log.i("Image", ImageUtilDoc.convert(croppedBitmap));
                 }
 
@@ -388,24 +385,31 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
         RequestBody request = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("1", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+                .addFormDataPart("1-1", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
                 .build();
 
         docServices = retrofit.create(DocServices.class);
-        Call<postOcr> call = docServices.post(request);
-        call.enqueue(new Callback<postOcr>() {
+        Call<Post> call = docServices.post(request);
+        call.enqueue(new Callback<Post>() {
 
             @Override
-            public void onResponse(Call<postOcr> call, Response<postOcr> response) {
-                postOcr postResponse = response.body();
-                int code = response.code();
-                Log.i("POST", "POST" + postResponse);
-                Log.i("HTTP", "CODE" + code);
-                Log.i("RETURN", "POST" + postResponse);
+            public void onResponse(Call<Post> call, Response<Post> response) {
+
+                Post postResponse = response.body();
+
+                String name = null;
+
+                for(Document document : postResponse.getOcrs().getResults()){
+                    name = document.getName();
+                }
+
+                Intent in =  new Intent(getActivity(), ReturnOcrActivity.class);
+                in.putExtra("result", name);
+                startActivity(in);
             }
 
             @Override
-            public void onFailure(Call<postOcr> call, Throwable t) {
+            public void onFailure(Call<Post> call, Throwable t) {
                 Log.i("error",t.getMessage());
             }
         });
