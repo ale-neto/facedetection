@@ -21,7 +21,7 @@ public class ReturnOcrActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setTitle("Return Recognition");
+        getSupportActionBar().setTitle("Return OCR");
 
         Intent it = getIntent();
         resultB = it.getExtras();

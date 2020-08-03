@@ -27,32 +27,61 @@
                 android:layout_width="320dp"
                 android:layout_height="322dp"
                 android:layout_above="@+id/make_photo_button"
-                android:layout_alignParentTop="true"
+                android:layout_below="@+id/textView2"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="50dp"
-                android:layout_marginTop="161dp"
+                android:layout_marginTop="46dp"
                 android:layout_marginEnd="50dp"
-                android:layout_marginBottom="116dp"
+                android:layout_marginBottom="152dp"
                 android:background="@drawable/border_doc" />
 
             <at.markushi.ui.CircleButton
                 android:id="@+id/make_photo_button"
-                android:layout_width="92dp"
-                android:layout_height="140dp"
+                android:layout_width="111dp"
+                android:layout_height="175dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginStart="164dp"
-                android:layout_marginLeft="164dp"
-                android:layout_marginEnd="155dp"
-                android:layout_marginRight="155dp"
-                android:layout_marginBottom="107dp"
+                android:layout_marginStart="154dp"
+                android:layout_marginLeft="154dp"
+                android:layout_marginEnd="146dp"
+                android:layout_marginRight="146dp"
+                android:layout_marginBottom="71dp"
                 android:text="photo"
                 app:cb_color="#CBFFFFFF"
                 app:cb_pressedRingWidth="8dip" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="52dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="179dp"
+                android:layout_marginTop="65dp"
+                android:layout_marginEnd="180dp"
+                android:text="CNH"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="57dp"
+                android:layout_marginTop="466dp"
+                android:layout_marginEnd="59dp"
+                android:text="POR FAVOR, COLOQUE A CNH CENTRALIZADA NO QUADRADO"
+                android:textColor="@color/colorPrimary"
+                android:textSize="10sp" />
+
         </RelativeLayout>
     </LinearLayout>
 </FrameLayout>

@@ -90,11 +90,9 @@ public class PhotoFragmentSecond extends Fragment implements SurfaceHolder.Callb
         super.onCreate(savedInstanceState);
         this.setRetainInstance(true);
 
-
         Bundle data = getArguments();
         token = data.getString("token");
         register = (Register) data.getSerializable("register");
-
 
         Retrofit retrofit  = new Retrofit.Builder()
                 .baseUrl("https://cluster.tercepta.com.br")
@@ -102,8 +100,6 @@ public class PhotoFragmentSecond extends Fragment implements SurfaceHolder.Callb
                 .build();
 
         recognitionS = retrofit.create(RecognitionServices.class);
-
-
 
     }
 
