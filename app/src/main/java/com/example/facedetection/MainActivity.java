@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
         Bundle resultB = getIntent().getExtras();
         token = resultB.getString("register");
 
-        getSupportActionBar().hide();
 
         setContentView(R.layout.activity_main);
         faceDetectButton = findViewById(R.id.detect_face_button);

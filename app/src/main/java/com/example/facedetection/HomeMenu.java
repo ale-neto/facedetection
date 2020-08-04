@@ -29,8 +29,10 @@ public class HomeMenu extends AppCompatActivity implements View.OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_menu);
+        getSupportActionBar().hide();
 
-       // Button recognition =  findViewById(R.id.acti);
+
+        // Button recognition =  findViewById(R.id.acti);
      //   recognition.setOnClickListener(this);
         Button doc =  findViewById(R.id.doc);
         doc.setOnClickListener(this);

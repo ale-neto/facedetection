@@ -27,6 +27,11 @@ public class DocPhotoActivity extends AppCompatActivity  implements DocPhotoFrag
     };
 
     @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

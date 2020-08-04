@@ -72,7 +72,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
-public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback{
+public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback {
 
     Camera camera;
     SurfaceView surfaceView;
@@ -122,7 +122,6 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
                 .build();
     }
 
-    
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

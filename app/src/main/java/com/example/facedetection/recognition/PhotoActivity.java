@@ -31,13 +31,13 @@ public class PhotoActivity extends AppCompatActivity  implements PhotoFragment.O
 
         setContentView(R.layout.activity_photo);
 
+        getSupportActionBar().hide();
+
         Bundle resultB = getIntent().getExtras();
         token = resultB.getString("register");
 
         ButterKnife.bind(this);
         checkPermissions();
-
-
     }
 
     void checkPermissions() {
@@ -72,6 +72,10 @@ public class PhotoActivity extends AppCompatActivity  implements PhotoFragment.O
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
     @Override
     public void onFragmentInteraction(Bitmap bitmap) {

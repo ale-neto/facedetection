@@ -41,6 +41,11 @@ public class RegisterActivity extends AppCompatActivity  implements PhotoFragmen
 
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
     void checkPermissions() {
         if (!hasPermissions(this, PERMISSIONS)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
