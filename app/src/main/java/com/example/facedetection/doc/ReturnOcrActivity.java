@@ -27,13 +27,7 @@ public class ReturnOcrActivity extends AppCompatActivity {
         resultB = it.getExtras();
         setContentView(R.layout.activity_ocr_return);
         tvResult = findViewById(R.id.textView);
-        String erro = resultB.getString("result").toString();
-        if( "erro" ==  erro){
-            erro  = "erro";
-            tvResult.setText(erro);
-        }else{
-            tvResult.setText("Sua CNH foi reconhecida: " +  resultB.getString("result"));
-        }
+        tvResult.setText("Sua CNH foi reconhecida: " +  resultB.getString("result"));
 
 
     }

@@ -406,9 +406,9 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
                 if(postResponse.getOcrs().getResults() != null  || !postResponse.getOcrs().getResults().isEmpty() ){
                     for(Document document : postResponse.getOcrs().getResults()){
                        if(document.getName() == null || document.getName().isEmpty()){
-                           name =  "erro";
+                           name =  "Sua CNH não foi reconhecida, tente novamente!";
                        }else{
-                           name = document.getName();
+                           name = "Você foi reconhecido " + document.getName();
                        }
                     }
                 }
