@@ -12,6 +12,7 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.facedetection.LoadingDialog;
 import com.example.facedetection.R;
 
 import com.example.facedetection.model.register.Documents;
@@ -41,6 +42,8 @@ public class ClientRegisterActivity extends AppCompatActivity {
     String data = new SimpleDateFormat("MM/dd/yyyy"). format(dataHoraAtual);
     RecognitionServices recognitionS;
     String token;
+    String name;
+    final LoadingDialog loadingDialog =  new LoadingDialog(ClientRegisterActivity.this);
 
 
     @Override
@@ -66,10 +69,10 @@ public class ClientRegisterActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                name = etName.getText().toString();
                 for(PayLoadR payLoadR : getRegister().getPayload()){
                     payLoadR.setName(etName.getText().toString());
-                    payLoadR.setBirthDate("12/22/1993");
+                    payLoadR.setBirthDate("12/22/1994");
                     payLoadR.setScopedId(1001112233);
                     payLoadR.setGender(0);
                     payLoadR.setCustomerId(3);
@@ -85,9 +88,11 @@ public class ClientRegisterActivity extends AppCompatActivity {
                 getRegister().setEventDateTime(data);
                 reposta = registerClient(register);
 
+                loadingDialog.startLoadingDialog();
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
                         String teste = reposta;
                         Intent it = new Intent(ClientRegisterActivity.this, ReturnRegisterActivity.class);
                         Bundle result =  new Bundle();
@@ -95,7 +100,7 @@ public class ClientRegisterActivity extends AppCompatActivity {
                         it.putExtras(result);
                         startActivity(it);
                     }
-                },9000);
+                },8000);
 
             }
         });
@@ -118,11 +123,7 @@ public class ClientRegisterActivity extends AppCompatActivity {
                 Log.i("POST", "POST" + registerP);
                 Log.i("HTTP", "code" + code);
                 Log.i("RETORNO", "deu certo" + postResponse);
-                
-                String name = null;
-                for(PayLoadR payLoadR : postResponse.getPayload()){
-                    name = payLoadR.getName();
-                }
+
                 
                 if (postResponse.isSuccess() == true){
                     setReposta("Seja bem-vindo " + name);

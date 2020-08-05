@@ -1,5 +1,6 @@
 package com.example.facedetection.doc;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 
@@ -31,12 +32,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.facedetection.LoadingDialog;
 import com.example.facedetection.R;
 import com.example.facedetection.model.ocr.Document;
 import com.example.facedetection.model.ocr.Ocrs;
 import com.example.facedetection.model.ocr.Post;
 
 import com.example.facedetection.recognition.ReturnQueryActivity;
+import com.example.facedetection.registerActivities.ClientRegisterActivity;
 import com.example.facedetection.services.DocServices;
 
 import com.example.facedetection.util.ImageUtil;
@@ -82,6 +85,7 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
     DocServices docServices;
     String token;
     Retrofit retrofit;
+    final LoadingDialog loadingDialog =  new LoadingDialog(getActivity());
 
 
 
@@ -252,7 +256,8 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
             camera.takePicture(myShutterCallback,
                     myPictureCallback_RAW, myPictureCallback_JPG);
         }
-
+        LoadingDialog loadingDialog = new LoadingDialog(getActivity());
+        loadingDialog.startLoadingDialog();
 
     }
 
@@ -317,7 +322,6 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
                 //save result
                 if (croppedBitmap != null) {
-
                     String photo = ImageUtilDoc.convert(croppedBitmap);
                     Bitmap bitmap = ImageUtil.convert(photo);
                     recognitionPost(createImageFile(bitmap));
@@ -398,10 +402,15 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
 
                 Post postResponse = response.body();
 
-                String name = null;
-
-                for(Document document : postResponse.getOcrs().getResults()){
-                    name = document.getName();
+                String name =  "erro";
+                if(postResponse.getOcrs().getResults() != null  || !postResponse.getOcrs().getResults().isEmpty() ){
+                    for(Document document : postResponse.getOcrs().getResults()){
+                       if(document.getName() == null || document.getName().isEmpty()){
+                           name =  "erro";
+                       }else{
+                           name = document.getName();
+                       }
+                    }
                 }
 
                 Intent in =  new Intent(getActivity(), ReturnOcrActivity.class);
