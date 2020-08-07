@@ -132,7 +132,7 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
         // Inflate the layout for this fragment
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         View view = inflater.inflate(R.layout.fragment_doc_photo, container, false);
-        surfaceView = (SurfaceView) view.findViewById(R.id.camera_preview_surface);
+        surfaceView = view.findViewById(R.id.camera_preview_surface);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -303,8 +303,8 @@ public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback
                 int x1 = borderCamera.getLeft();
                 int y1 = borderCamera.getTop();
 
-                int x2 = borderCamera.getWidth();
-                int y2 = borderCamera.getHeight();
+                int x2 = 1024;
+                int y2 = 722;
 
                 //calculate position and size for cropping
                 int cropStartX = Math.round(x1 * koefX);

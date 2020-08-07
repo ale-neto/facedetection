@@ -20,7 +20,7 @@ public class ImageUtilDoc {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Bitmap scaledBitmap = getScaledBitmap(bitmap, 1024, 722);
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 92, outputStream);
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         return Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
 
     }

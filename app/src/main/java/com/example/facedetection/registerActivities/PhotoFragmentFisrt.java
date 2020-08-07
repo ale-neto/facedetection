@@ -159,9 +159,6 @@ public class PhotoFragmentFisrt extends Fragment implements SurfaceHolder.Callba
                 if (camera.getParameters().getFocusMode().contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                 }
-                if (camera.getParameters().getFlashMode().contains(Camera.Parameters.FLASH_MODE_AUTO)) {
-                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
-                }
 
                 camera.setParameters(parameters);
 
