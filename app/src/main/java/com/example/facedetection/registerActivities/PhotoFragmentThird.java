@@ -398,7 +398,7 @@ public class PhotoFragmentThird extends Fragment implements SurfaceHolder.Callba
                 }
                 
                 Intent in =  new Intent(getActivity(), ReturnQueryActivity.class);
-                in.putExtra("result",namePerson );
+                in.putExtra("result", namePerson);
                 startActivity(in);
                 
             }
