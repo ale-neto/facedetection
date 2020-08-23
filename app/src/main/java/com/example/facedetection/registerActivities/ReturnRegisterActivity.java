@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.facedetection.HomeMenu;
 import com.example.facedetection.R;
+import com.example.facedetection.doc.DocPhotoActivity;
 import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.Post;
@@ -26,10 +29,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class ReturnRegisterActivity extends AppCompatActivity {
+public class ReturnRegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView tvReturnRegister;
-    Bundle resultB;
+    Bundle resultB; 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -44,7 +47,23 @@ public class ReturnRegisterActivity extends AppCompatActivity {
         setContentView(R.layout.return_resgister);
         tvReturnRegister = findViewById(R.id.textView);
         tvReturnRegister.setText(resultB.getString("result"));
+
+        Button ocr =  findViewById(R.id.ocr);
+        ocr.setOnClickListener(this);
     }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+
+            case R.id.register:
+                Intent ocr = new Intent(this, DocPhotoActivity.class);
+                startActivity(ocr);
+                break;
+        }
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -56,4 +75,6 @@ public class ReturnRegisterActivity extends AppCompatActivity {
         }
         return true;
     }
+
+
 }

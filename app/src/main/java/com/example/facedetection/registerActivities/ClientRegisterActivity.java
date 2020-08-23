@@ -130,8 +130,6 @@ public class ClientRegisterActivity extends AppCompatActivity {
                 }else{
                     setReposta("Não deu certo. -");
                 }
-
-
             }
 
             @Override

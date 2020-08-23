@@ -1,4 +1,4 @@
-package com.example.facedetection.recognition;
+package com.example.facedetection.registerActivities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -27,41 +28,53 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-
+import com.example.facedetection.LoadingDialog;
 import com.example.facedetection.R;
-import com.example.facedetection.model.PayLoad;
-import com.example.facedetection.model.Picture;
-import com.example.facedetection.model.Post;
-import com.example.facedetection.services.RecognitionServices;
+import com.example.facedetection.doc.ReturnOcrActivity;
+import com.example.facedetection.model.ocr.Document;
+import com.example.facedetection.model.ocr.Post;
+import com.example.facedetection.services.DocServices;
 import com.example.facedetection.util.ImageUtil;
+import com.example.facedetection.util.ImageUtilDoc;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
+
+public class DocPhotoFragment extends Fragment implements SurfaceHolder.Callback {
 
     Camera camera;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
     boolean previewing = false;
     Context context;
-    RecognitionServices recognitionS;
+    DocServices docServices;
     String token;
+    Retrofit retrofit;
+    final LoadingDialog loadingDialog =  new LoadingDialog(getActivity());
 
 
 
@@ -88,28 +101,27 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
         token = data.getString("token");
 
 
-        Retrofit retrofit  = new Retrofit.Builder()
-                .baseUrl("https://cluster.tercepta.com.br")
-                .addConverterFactory(JacksonConverterFactory.create())
+
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.MINUTES)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
                 .build();
 
-        recognitionS = retrofit.create(RecognitionServices.class);
-
-
-
+         retrofit  = new Retrofit.Builder()
+                .baseUrl("http://vmdev.tercepta.com.br:10002")
+                .client(okHttpClient)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
     }
 
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        View view = inflater.inflate(R.layout.fragment_photo, container, false);
-        surfaceView = (SurfaceView) view.findViewById(R.id.camera_preview_surface);
+        View view = inflater.inflate(R.layout.fragment_doc_photo, container, false);
+        surfaceView = view.findViewById(R.id.camera_preview_surface);
         surfaceHolder = surfaceView.getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -130,7 +142,6 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
         }
     }
 
-
     @Override
     public void onDetach() {
         super.onDetach();
@@ -139,7 +150,7 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder surfaceHolder) {
-        camera = Camera.open(1);
+        camera = Camera.open();
     }
 
     @Override
@@ -234,7 +245,8 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
             camera.takePicture(myShutterCallback,
                     myPictureCallback_RAW, myPictureCallback_JPG);
         }
-
+        LoadingDialog loadingDialog = new LoadingDialog(getActivity());
+        loadingDialog.startLoadingDialog();
 
     }
 
@@ -266,7 +278,7 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
 
                 //rotate bitmap, because camera sensor usually in landscape mode
                 Matrix matrix = new Matrix();
-                matrix.postRotate(270);
+                matrix.postRotate(90);
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bitmapPicture, 0, 0, bitmapPicture.getWidth(), bitmapPicture.getHeight(), matrix, true);
                 //save file
                 //createImageFile(rotatedBitmap);
@@ -280,8 +292,8 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
                 int x1 = borderCamera.getLeft();
                 int y1 = borderCamera.getTop();
 
-                int x2 = borderCamera.getWidth();
-                int y2 = borderCamera.getHeight();
+                int x2 = 1024;
+                int y2 = 722;
 
                 //calculate position and size for cropping
                 int cropStartX = Math.round(x1 * koefX);
@@ -299,8 +311,11 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
 
                 //save result
                 if (croppedBitmap != null) {
-                    createImageFile(croppedBitmap);
-                    Log.i("Image", ImageUtil.convert(croppedBitmap));
+                    String photo = ImageUtilDoc.convert(croppedBitmap);
+                    Bitmap bitmap = ImageUtil.convert(photo);
+                    recognitionPost(createImageFile(bitmap));
+                    //post(createImageFile(bitmap));
+                    Log.i("Image", ImageUtilDoc.convert(croppedBitmap));
                 }
 
             } else if (display.getRotation() == Surface.ROTATION_270) {
@@ -315,12 +330,11 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
 
             if (camera != null) {
                 camera.startPreview();
-
             }
         }
     };
 
-    public void createImageFile(final Bitmap bitmap) {
+    public File createImageFile(final Bitmap bitmap) {
 
         File path = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
@@ -358,54 +372,93 @@ public class PhotoFragment  extends Fragment implements SurfaceHolder.Callback{
             // not currently mounted.
             Log.w("ExternalStorage", "Error writing " + file, e);
         }
-        recognitionPost(ImageUtil.convert(bitmap));
-
+        return file;
     }
-    private void recognitionPost(String base64) {
 
-        List<PayLoad> payload = new ArrayList<>();
-        PayLoad payLoadAux = new PayLoad();
-        List<Picture> picture = new ArrayList<>();
-        Picture pictureAux =  new Picture();
-        pictureAux.setContent(base64);
-        picture.add(pictureAux);
-        payLoadAux.setPictures(picture);
-        payLoadAux.setBirthDate("12/22/1994");
-        payload.add(payLoadAux);
+    private void recognitionPost(File file) {
 
-        final Post post = new Post(2, payload, 3,3, "12/22/1994", "05/05/2020");
+        RequestBody request = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("1-1", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+                .build();
 
-        Call<Post> call = recognitionS.recognitionPost("Bearer "+ token, post);
+        docServices = retrofit.create(DocServices.class);
+        Call<Post> call = docServices.post(request);
         call.enqueue(new Callback<Post>() {
 
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
+
                 Post postResponse = response.body();
 
-                String namePerson = null;
-                for (PayLoad payLoadR : postResponse.getPayload()){
-                    if(payLoadR.getName() != null){
-                        namePerson = "Você foi reconhecido " +payLoadR.getName() + "!";
-                    }else{
-                        namePerson = "Error " + payLoadR.getName()  + ". Tente novamente, por favor";
+                String name =  "erro";
+                if(postResponse.getOcrs().getResults() != null  || !postResponse.getOcrs().getResults().isEmpty() ){
+                    for(Document document : postResponse.getOcrs().getResults()){
+                       if(document.getName() == null || document.getName().isEmpty()){
+                           name =  "Sua CNH não foi reconhecida, tente novamente!";
+                       }else{
+                           name = "Você foi reconhecido " + document.getName();
+                       }
                     }
                 }
-                
-                Intent in =  new Intent(getActivity(), ReturnQueryActivity.class);
-                in.putExtra("result",namePerson );
+
+                Intent in =  new Intent(getActivity(), ReturnOcrActivity.class);
+                in.putExtra("result", name);
                 startActivity(in);
-                
             }
 
             @Override
             public void onFailure(Call<Post> call, Throwable t) {
                 Log.i("error",t.getMessage());
-                String error = null;
-                error = "Error " + t.getMessage() + ". Tente novamente, por favor";
-                Intent in =  new Intent(getActivity(), ReturnQueryActivity.class);
-                in.putExtra("result",error );
-                startActivity(in);
             }
         });
     }
+
+
+    private void post(File file){
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+
+        MediaType mediaType = MediaType.parse("text/plain");
+
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("1", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://vmdev.tercepta.com.br:10002/")
+                .method("POST", body)
+                .build();
+        try {
+
+            okhttp3.Response response = client.newCall(request).execute();
+
+            Log.i("post",response.body().toString());
+            int code = response.code();
+            Log.i("Code","code " + code);
+
+            String resStr = response.body().string();
+            JSONObject json = new JSONObject(resStr);
+
+            Log.i("Code", json.toString());
+
+            Intent in =  new Intent(getActivity(), ReturnOcrActivity.class);
+            in.putExtra("result", json.toString() );
+            startActivity(in);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
 }

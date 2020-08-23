@@ -1,4 +1,4 @@
-package com.example.facedetection.recognition;
+package com.example.facedetection.registerActivities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,11 +27,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-
 import com.example.facedetection.R;
 import com.example.facedetection.model.PayLoad;
 import com.example.facedetection.model.Picture;
 import com.example.facedetection.model.Post;
+import com.example.facedetection.recognition.ReturnQueryActivity;
 import com.example.facedetection.services.RecognitionServices;
 import com.example.facedetection.util.ImageUtil;
 
